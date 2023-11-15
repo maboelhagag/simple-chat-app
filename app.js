@@ -1,62 +1,49 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const messagesContainer = document.getElementById("chat-messages");
-    const messageInput = document.getElementById("message-input");
-    const sendButton = document.getElementById("send-button");
+document.addEventListener("DOMContentLoaded", function() {
+    var messageInput = document.getElementById("message-input");
+    var sendButton = document.getElementById("send-button");
+    var chatMessages = document.getElementById("chat-messages");
 
-    // Function to append a message to the chat window
-    function appendMessage(username, message) {
-        const messageElement = document.createElement("div");
-        messageElement.innerHTML = `<strong>${username}:</strong> ${message}`;
-        messagesContainer.appendChild(messageElement);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to the latest message
-    }
+    // Generate a random nickname for the user
+    var nickname = "User" + Math.floor(Math.random() * 10000);
 
-    // Event listener for the send button
-    sendButton.addEventListener("click", function () {
-        const message = messageInput.value.trim();
-        if (message !== "") {
-            // You can replace "user" with the actual username or user ID
-            appendMessage("user", message);
+    sendButton.addEventListener("click", function() {
+        var message = messageInput.value;
+
+        if (message.trim() !== "") {
+            // Send the message to the server
+            sendMessage(nickname, message);
             messageInput.value = "";
         }
     });
 
-    // You can add WebSocket functionality for real-time chat
-    // For simplicity, we'll use a basic PHP backend to handle messages
-
-    // Function to fetch messages from the server
-    function fetchMessages() {
-        fetch("fetch_messages.php")
-            .then(response => response.json())
-            .then(data => {
-                data.messages.forEach(message => {
-                    appendMessage(message.username, message.message);
-                });
-            });
+    function sendMessage(nickname, message) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "chat.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Refresh the chat messages
+                refreshChat();
+            }
+        };
+        xhr.send("nickname=" + encodeURIComponent(nickname) + "&message=" + encodeURIComponent(message));
     }
 
-    // Fetch initial messages
-    fetchMessages();
-
-    // Function to send a message to the server
-    function sendMessage(message) {
-        const formData = new FormData();
-        formData.append("message", message);
-
-        fetch("send_message.php", {
-            method: "POST",
-            body: formData,
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    appendMessage("user", message);
-                } else {
-                    console.error("Failed to send message");
-                }
-            });
+    function refreshChat() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "send_message.php", true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                chatMessages.innerHTML = xhr.responseText;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        };
+        xhr.send();
     }
 
-    // You can add more functionality such as user authentication, creating chat rooms, etc.
-    // This example is a basic starting point.
+    // Refresh the chat messages every 2 seconds
+    setInterval(refreshChat, 2000);
+
+    // Initial chat refresh
+    refreshChat();
 });
