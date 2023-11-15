@@ -1,33 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat Room</title>
-  <link rel="stylesheet" href="styles.css">
+    <title>Chat Program</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-  <div class="chat-container">
-    <div class="chat-header">
-      <h1>Chat Room</h1>
-      <div class="nickname-form">
-        <label for="nickname">Nickname:</label>
-        <input type="text" id="nickname" placeholder="Enter your nickname">
-      </div>
+    <div id="chat-container">
+        <h1>Chat Program</h1>
+        <div id="nickname-section">
+            <label for="nickname-input">Enter your nickname:</label>
+            <input type="text" id="nickname-input" maxlength="10" placeholder="Nickname">
+            <button id="nickname-submit">Submit</button>
+            <p id="nickname-error"></p>
+        </div>
+        <div id="chat-section">
+            <div id="user-list">
+                <h2>User List</h2>
+            </div>
+            <div id="chat-room">
+                <h2>Chat Room</h2>
+                <div id="messages"></div>
+                <input type="text" id="message-input" placeholder="Type your message...">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
     </div>
 
-    <div class="chat-messages">
-      <div id="messages"></div>
-    </div>
-
-    <div class="chat-input">
-      <form id="message-form">
-        <input type="text" name="message" placeholder="Enter your message">
-        <button type="submit">Send</button>
-      </form>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
