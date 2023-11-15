@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+d_messagedocument.addEventListener("DOMContentLoaded", function() {
     var messageInput = document.getElementById("message-input");
     var sendButton = document.getElementById("send-button");
     var chatMessages = document.getElementById("chat-messages");
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function sendMessage(nickname, message) {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "chat.php", true);
+        xhr.open("POST", "send_message.php", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4 && xhr.status === 200) {
