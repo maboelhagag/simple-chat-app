@@ -68,12 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         userItem.textContent = nickname;
         userListComponent.appendChild(userItem);
 
-        // Simulate additional users in the user list (for demonstration purposes)
-        const otherUsers = ["User1", "User2", "User3"];
-        otherUsers.forEach(user => {
-            const item = document.createElement("li");
-            item.textContent = user;
-            userListComponent.appendChild(item);
+        
         });
     }
 
