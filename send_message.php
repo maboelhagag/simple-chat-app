@@ -1,27 +1,14 @@
 <?php
+$chatFile = "chat.txt";
 
-// For simplicity, messages are stored in a file
-// In a real-world scenario, you would use a database
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $nickname = $_POST["nickname"];
+    $message = $_POST["message"];
 
-$messagesFile = 'messages.json';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $message = isset($_POST['message']) ? trim($_POST['message']) : '';
-
-    if ($message !== '') {
-        $newMessage = [
-            'username' => 'user', // You can replace this with the actual username or user ID
-            'message' => $message,
-        ];
-
-        $messages = file_exists($messagesFile) ? json_decode(file_get_contents($messagesFile), true) : [];
-        $messages[] = $newMessage;
-
-        file_put_contents($messagesFile, json_encode($messages));
-
-        echo json_encode(['success' => true]);
-        exit;
-    }
+    // Append the new message to the chat file
+    file_put_contents($chatFile, "<strong>" . $nickname . "</strong>: " . $message . "<br>", FILE_APPEND);
+} elseif ($_SERVER["REQUEST_METHOD"] === "GET") {
+    // Read the chat file and send its contents as the response
+    echo file_get_contents($chatFile);
 }
-
-echo json_encode(['success' => false]);
+?>
