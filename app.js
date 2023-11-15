@@ -22,7 +22,7 @@ function generateNickname() {
 }
 
 // Connect to the WebSocket server
-const socket = new WebSocket('https://maboelhagag.github.io/simple-chat-app/');
+const socket = new WebSocket('wss://maboelhagag.github.io/simple-chat-app/');
 
 // Handle incoming messages
 socket.onmessage = (event) => {
