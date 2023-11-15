@@ -1,49 +1,51 @@
-d_messagedocument.addEventListener("DOMContentLoaded", function() {
-    var messageInput = document.getElementById("message-input");
-    var sendButton = document.getElementById("send-button");
-    var chatMessages = document.getElementById("chat-messages");
+const messages = document.getElementById('messages');
+const messageForm = document.getElementById('message-form');
+const nicknameInput = document.getElementById('nickname');
 
-    // Generate a random nickname for the user
-    var nickname = "User" + Math.floor(Math.random() * 10000);
+// Generate a random unique nickname if user doesn't provide one
+let nickname = generateNickname();
 
-    sendButton.addEventListener("click", function() {
-        var message = messageInput.value;
+// Check if user has entered a nickname
+if (nicknameInput.value.trim()) {
+  nickname = nicknameInput.value.trim();
+}
 
-        if (message.trim() !== "") {
-            // Send the message to the server
-            sendMessage(nickname, message);
-            messageInput.value = "";
-        }
-    });
+// Update user's nickname
+document.getElementById('nickname').value = nickname;
 
-    function sendMessage(nickname, message) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "send_message.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                // Refresh the chat messages
-                refreshChat();
-            }
-        };
-        xhr.send("nickname=" + encodeURIComponent(nickname) + "&message=" + encodeURIComponent(message));
-    }
+// Function to generate a random unique nickname
+function generateNickname() {
+  const adjectives = ['Awesome', 'Brilliant', 'Creative', 'Dynamic', 'Energetic', 'Fantastic', 'Gifted', 'Happy', 'Intelligent', 'Jolly'];
+  const nouns = ['Artist', 'Builder', 'Coder', 'Dancer', 'Explorer', 'Friend', 'Gamer', 'Hero', 'Inventor', 'Joker'];
 
-    function refreshChat() {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "send_message.php", true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                chatMessages.innerHTML = xhr.responseText;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        };
-        xhr.send();
-    }
+  return `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
+}
 
-    // Refresh the chat messages every 2 seconds
-    setInterval(refreshChat, 2000);
+// Connect to the WebSocket server
+const socket = new WebSocket('ws://localhost:8080');
 
-    // Initial chat refresh
-    refreshChat();
+// Handle incoming messages
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  const message = `${data.username}: ${data.message}`;
+
+  messages.innerHTML += `<div class="message">${message}</div>`;
+};
+
+// Handle message submission
+messageForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const message = messageForm.elements.message.value.trim();
+
+  if (!message) {
+    return;
+  }
+
+  socket.send(JSON.stringify({
+    username: nickname,
+    message: message
+  }));
+
+  messageForm.elements.message.value = '';
 });
