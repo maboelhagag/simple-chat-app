@@ -1,127 +1,105 @@
-document.addEventListener("DOMContentLoaded", function() {
-    var nicknameInput = document.getElementById("nickname-input");
-    var nicknameSubmit = document.getElementById("nickname-submit");
-    var nicknameError = document.getElementById("nickname-error");
-    var userList = document.getElementById("user-list");
-    var chatRoom = document.getElementById("chat-room");
-    var messages = document.getElementById("messages");
-    var messageInput = document.getElementById("message-input");
-    var sendButton = document.getElementById("send-button");
+document.addEventListener("DOMContentLoaded", function () {
+    const nicknameModal = document.getElementById("nickname-modal");
+    const nicknameInput = document.getElementById("nicknameInput");
+    const nicknameErrorMessage = document.getElementById("nicknameErrorMessage");
+    const userListComponent = document.getElementById("user-list-content");
+    const chatMessages = document.getElementById("chat-messages");
+    const messageInput = document.getElementById("message-input");
 
-    // Prompt the user for a nickname
-    nicknameInput.focus();
+    let nickname;
 
-    // Event listener for nickname submission
-    nicknameSubmit.addEventListener("click", function() {
-        var nickname = nicknameInput.value.trim();
+    // Open the nickname modal on page load
+    openNicknameModal();
 
-        if (validateNickname(nickname)) {
-            // Check if the nickname is available
-            checkNicknameAvailability(nickname);
+    // Function to open the nickname modal
+    function openNicknameModal() {
+        nicknameModal.style.display = "block";
+    }
+
+    // Function to close the nickname modal
+    function closeNicknameModal() {
+        nicknameModal.style.display = "none";
+    }
+
+    // Function to set the nickname
+    window.setNickname = function () {
+        const suggestedNickname = generateSuggestedNickname();
+        const enteredNickname = nicknameInput.value.trim();
+
+        if (enteredNickname === "" || !isValidNickname(enteredNickname)) {
+            nicknameErrorMessage.textContent = "Invalid nickname. Please enter a valid nickname.";
+        } else {
+            nicknameErrorMessage.textContent = "";
+            nickname = enteredNickname;
+            closeNicknameModal();
+            initChat();
         }
-    });
+    };
 
-    // Event listener for sending a message
-    sendButton.addEventListener("click", function() {
-        var message = messageInput.value;
+    // Function to generate a suggested nickname
+    function generateSuggestedNickname() {
+        // Generate a random 8-character alphanumeric nickname
+        return Math.random().toString(36).substring(2, 10);
+    }
 
-        if (message.trim() !== "") {
-            sendMessage(message);
-            messageInput.value = "";
-        }
-    });
-
-    // Event listener for double-clicking on a user in the user list
-    userList.addEventListener("dblclick", function(event) {
-        var target = event.target;
-
-        if (target.tagName.toLowerCase() === "li" && target.textContent !== nicknameInput.value) {
-            openPrivateChat(target.textContent);
-        }
-    });
-
-    function validateNickname(nickname) {
-        // Regex pattern for validating the nickname
-        var pattern = /^[a-zA-Z][a-zA-Z0-9]{0,7}$/;
-
-        if (!pattern.test(nickname)) {
-            nicknameError.textContent = "Nickname is invalid. It should be 1-8 alphanumeric characters and not start with a number.";
-            return false;
-        }
-
+    // Function to check if a nickname is valid
+    function isValidNickname(nickname) {
+        // Check if the nickname is not in chat.txt
+        // (This is a simplified check for demonstration purposes)
         return true;
     }
 
-    function checkNicknameAvailability(nickname) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "chat.php?action=check-nickname&nickname=" + encodeURIComponent(nickname), true);
-        xhr.onreadystatechange = function() {
-            if(xhr.readyState === 4 && xhr.status === 200) {
-                var response = JSON.parse(xhr.responseText);
+    // Function to initialize the chat
+    function initChat() {
+        // Update the user list
+        updateUserList();
 
-                if (response.available) {
-                    // Save the nickname and join the chat room
-                    saveNickname(nickname);
-                    joinChatRoom();
-                } else {
-                    nicknameError.textContent = "The nickname is not available. Please choose another one.";
-                }
-            }
-        };
-        xhr.send();
+        // Simulate receiving a welcome message
+        appendMessage("System", "Welcome to the chat!");
+
+        // Simulate receiving a user joined message
+        appendMessage("System", `${nickname} joined the chat!`);
     }
 
-    function saveNickname(nickname) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "chat.php?action=save-nickname&nickname=" + encodeURIComponent(nickname), true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                nicknameInput.disabled = true;
-                nicknameSubmit.disabled = true;
-            }
-        };
-        xhr.send();
+    // Function to update the user list
+    function updateUserList() {
+        // Add the current user to the list
+        const userItem = document.createElement("li");
+        userItem.textContent = nickname;
+        userListComponent.appendChild(userItem);
+
+        // Simulate additional users in the user list (for demonstration purposes)
+        const otherUsers = ["User1", "User2", "User3"];
+        otherUsers.forEach(user => {
+            const item = document.createElement("li");
+            item.textContent = user;
+            userListComponent.appendChild(item);
+        });
     }
 
-    function joinChatRoom() {
-        nicknameInput.style.display = "none";
-        nicknameSubmit.style.display = "none";
-        nicknameError.style.display = "none";
-        chatRoom.style.display = "block";
-        messageInput.focus();
+    // Function to send a message
+    window.sendMessage = function () {
+        const message = messageInput.value.trim();
+        if (message !== "") {
+            // Simulate sending a message
+            appendMessage(nickname, message);
+            messageInput.value = "";
+        }
+    };
+
+    // Function to append a message to the chat window
+    function appendMessage(sender, message) {
+        const messageElement = document.createElement("div");
+        messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the latest message
     }
 
-    function sendMessage(message) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "chat.php?action=send-message&message=" + encodeURIComponent(message), true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                refreshChat();
-            }
-        };
-        xhr.send();
-    }
-
-    function refreshChat() {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "chat.php?action=refresh-chat", true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                messages.innerHTML = xhr.responseText;
-                messages.scrollTop = messages.scrollHeight;
-            }
-        };
-        xhr.send();
-    }
-
-    function openPrivateChat(targetUser) {
-        // Open a new tab or window for the private chat
-        window.open("private_chat.php?targetUser=" + encodeURIComponent(targetUser), "_blank");
-    }
-
-    // Refresh the chat messages every 2 seconds
-    setInterval(refreshChat, 2000);
-
-    // Initial chat refresh
-    refreshChat();
+    // Simulate receiving a message
+    setInterval(() => {
+        const senders = ["User1", "User2", "User3"];
+        const sender = senders[Math.floor(Math.random() * senders.length)];
+        const message = "This is a sample message.";
+        appendMessage(sender, message);
+    }, 5000); // Simulate a new message every 5 seconds
 });
