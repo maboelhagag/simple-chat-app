@@ -1,16 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Chat Room</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Room</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="chat-container">
-        <div id="chat-messages"></div>
-        <input type="text" id="message-input" placeholder="Type your message...">
-        <button id="send-button">Send</button>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h1>Chat Room</h1>
+      <div class="nickname-form">
+        <label for="nickname">Nickname:</label>
+        <input type="text" id="nickname" placeholder="Enter your nickname">
+      </div>
     </div>
 
-    <script src="app.js"></script>
+    <div class="chat-messages">
+      <div id="messages"></div>
+    </div>
+
+    <div class="chat-input">
+      <form id="message-form">
+        <input type="text" name="message" placeholder="Enter your message">
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
