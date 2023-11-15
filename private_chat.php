@@ -1,24 +1,27 @@
 <?php
 // private_chat.php
 
-$privateChatFile = "private_chat.txt";
-$action = $_GET["action"];
+$targetUser = $_GET["targetUser"];
 
-if ($action === "send-private-message") {
-    $message = $_GET["message"];
-    savePrivateMessage($message);
-} elseif ($action === "refresh-private-chat") {
-    echo getPrivateChatLog();
-}
-
-function savePrivateMessage($message) {
-    $targetUser = $_GET["targetUser"];
-    $nickname = $_GET["nickname"];
-    $logEntry = $targetUser . ":" . $nickname . ": " . $message . "<br>";
-    file_put_contents($privateChatFile, $logEntry, FILE_APPEND);
-}
-
-function getPrivateChatLog() {
-    return file_get_contents($privateChatFile);
+if (empty($targetUser)) {
+    die("Invalid target user.");
 }
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Private Chat</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div id="private-chat-container">
+        <h1>Private Chat with <?php echo $targetUser; ?></h1>
+        <div id="private-chat-messages"></div>
+        <input type="text" id="private-message-input" placeholder="Type your message...">
+        <button id="private-send-button">Send</button>
+    </div>
+
+    <script src="private_chat.js"></script>
+</body>
+</html>
