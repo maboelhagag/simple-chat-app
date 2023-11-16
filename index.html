@@ -1,27 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Login Form</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('form').submit(function(event) {
+                event.preventDefault();
+
+                var username = $('#username').val();
+                var password = $('#password').val();
+
+                $.getJSON('users.json', function(data) {
+                    var found = false;
+
+                    $.each(data, function(index, user) {
+                        if (user.username === username && user.password === password) {
+                            found = true;
+                            return false;
+                        }
+                    });
+
+                    if (found) {
+                        alert('Access granted');
+                    } else {
+                        alert('Access denied');
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+    <h2>Login</h2>
+    <form>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
 
-            <button type="button" onclick="login()">Login</button>
-        </form>
-
-        <p id="message"></p>
-    </div>
-
-    <script src="app.js"></script>
+        <input type="submit" value="Submit">
+    </form>
 </body>
 </html>
