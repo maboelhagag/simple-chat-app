@@ -3,7 +3,7 @@ function login() {
     const password = document.getElementById("password").value;
 
     // Fetch the test credentials file (Replace with the actual path)
-    fetch('credentials.json')
+    fetch('credentials.Json')
         .then(response => response.json())
         .then(data => {
             // Check if the entered username and password match any stored credentials
