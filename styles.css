@@ -1,35 +1,18 @@
 body {
-  font-family: Arial, sans-serif;
+    font-family: Arial, sans-serif;
 }
 
-#container {
-  width: 400px;
-  margin: 0 auto;
+#chat-box {
+    max-height: 300px;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+    padding: 10px;
 }
 
-h1 {
-  text-align: center;
+#message-form {
+    margin-top: 10px;
 }
 
-#messages {
-  height: 300px;
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-bottom: 10px;
-  overflow-y: scroll;
-}
-
-#username-input,
-#message-input,
-#send-button {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-#send-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
+#message-form input, #message-form button {
+    margin-right: 5px;
 }
